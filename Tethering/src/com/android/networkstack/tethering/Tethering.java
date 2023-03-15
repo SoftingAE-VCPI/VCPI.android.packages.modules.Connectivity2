@@ -394,6 +394,14 @@ public class Tethering {
                 });
 
         startStateMachineUpdaters();
+
+        // HACK: Alwals start Dnsmasq, without dhcp, for LXC usage
+        final String[] dhcpRanges = new String[0];
+        try {
+            NetdUtils.tetherStart(mNetd, true /** usingLegacyDnsProxy */, dhcpRanges);
+        } catch (Exception e) {
+            mLog.w("NetdUtils.tetherStart() exception");
+        }
     }
 
     private class SettingsObserver extends ContentObserver {
@@ -1742,9 +1750,24 @@ public class Tethering {
                         handleInterfaceServingStateInactive(who);
                         break;
                     }
+                    // HACK: Always notify Dnsmasq
                     case EVENT_IFACE_UPDATE_LINKPROPERTIES:
-                        // Silently ignore these for now.
+                    case EVENT_UPSTREAM_PERMISSION_CHANGED:
+                    case CMD_UPSTREAM_CHANGED:
+                    case CMD_RETRY_UPSTREAM:
+                    case EVENT_UPSTREAM_CALLBACK: {
+                        try {
+                            final UpstreamNetworkState ns = mUpstreamNetworkMonitor.getCurrentPreferredUpstream();
+                            if (ns != null) {
+                                setDnsForwarders(ns.network, ns.linkProperties);
+                            } else {
+                                mLog.w("InitialState processMessage() UpstreamNetworkState (null)");
+                            }
+                        } catch (Exception e) {
+                            mLog.w("InitialState processMessage() setDnsForwarders() exception " +Log.getStackTraceString(e));
+                        }
                         break;
+                    }
                     default:
                         return NOT_HANDLED;
                 }
