@@ -1587,7 +1587,7 @@ public class ConnectivityService extends IConnectivityManager.Stub
         handleAlwaysOnNetworkRequest(mDefaultMobileDataRequest,
                 ConnectivitySettingsManager.MOBILE_DATA_ALWAYS_ON, true /* defaultValue */);
         handleAlwaysOnNetworkRequest(mDefaultWifiRequest,
-                ConnectivitySettingsManager.WIFI_ALWAYS_REQUESTED, false /* defaultValue */);
+                ConnectivitySettingsManager.WIFI_ALWAYS_REQUESTED, true /* defaultValue */);
         final boolean vehicleAlwaysRequested = mResources.get().getBoolean(
                 R.bool.config_vehicleInternalNetworkAlwaysRequested);
         handleAlwaysOnNetworkRequest(mDefaultVehicleRequest, vehicleAlwaysRequested);
