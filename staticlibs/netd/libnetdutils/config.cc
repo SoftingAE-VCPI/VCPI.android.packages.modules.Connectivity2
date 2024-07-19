@@ -20,8 +20,8 @@
 #include <android-base/parseint.h>
 #include <android-base/strings.h>
 
-using namespace ::std;
-using namespace ::android::base;
+using namespace ::std;            // NOLINT(google-build-using-namespace)
+using namespace ::android::base;  // NOLINT(google-build-using-namespace)
 
 namespace {
 
