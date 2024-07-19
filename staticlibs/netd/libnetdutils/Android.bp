@@ -21,6 +21,7 @@ cc_library {
         "UniqueFd.cpp",
         "UniqueFile.cpp",
         "Utils.cpp",
+        "config.cc",
     ],
     defaults: ["netd_defaults"],
     cflags: [
