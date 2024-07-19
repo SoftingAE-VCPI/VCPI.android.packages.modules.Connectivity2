@@ -27,10 +27,13 @@
 namespace android {
 namespace netdutils {
 
+static std::function<void(const char*)> _callback = nullptr;
+
 StatusOr<std::vector<std::string>> getIfaceNames() {
     std::vector<std::string> ifaceNames;
     DIR* d;
     struct dirent* de;
+    auto callback = _callback;
 
     if (!(d = opendir("/sys/class/net"))) {
         return statusFromErrno(errno, "Cannot open iface directory");
@@ -39,8 +42,16 @@ StatusOr<std::vector<std::string>> getIfaceNames() {
         if ((de->d_type != DT_DIR) && (de->d_type != DT_LNK)) continue;
         if (de->d_name[0] == '.') continue;
         ifaceNames.push_back(std::string(de->d_name));
+
+        if(callback) {
+            callback(de->d_name);
+        }
     }
     closedir(d);
+    if(callback) {
+        // inf == nullptr on end of processing
+        callback(nullptr);
+    }
     return ifaceNames;
 }
 
@@ -56,6 +67,12 @@ StatusOr<std::map<std::string, uint32_t>> getIfaceList() {
         }
     }
     return ifacePairs;
+}
+
+void setIfaceNamesCallback(std::function<void(const char*)> callback) {
+    if (_callback == nullptr) {
+        _callback = callback;
+    }
 }
 
 }  // namespace netdutils

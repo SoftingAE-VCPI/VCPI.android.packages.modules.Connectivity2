@@ -18,6 +18,7 @@
 #define NETUTILS_UTILS_H
 
 #include "netdutils/StatusOr.h"
+#include <functional>
 
 namespace android {
 namespace netdutils {
@@ -25,6 +26,8 @@ namespace netdutils {
 StatusOr<std::vector<std::string>> getIfaceNames();
 
 StatusOr<std::map<std::string, uint32_t>> getIfaceList();
+
+void setIfaceNamesCallback(std::function<void(const char*)> callback);
 
 }  // namespace netdutils
 }  // namespace android
